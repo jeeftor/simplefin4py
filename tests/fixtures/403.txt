@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="Description" content="The SimpleFIN Bridge lets you securely share your financial transaction data with apps.">
+    <title>Forbidden - SimpleFIN Bridge</title>
+    <link rel="stylesheet" href="/static/wing.css" />
+    <link rel="stylesheet" href="/static/style.css" />
+    <link rel="icon" href="/static/favicon.png" type="image/png" /> 
+  </head>
+  <body>
+    <section class="container main-wrapper">
+      
+      <section class="main-document">
+      <header class="nav left">
+        <div class="nav-item logo-holder">
+          <img src="/static/logo.svg" class="logo" alt="SimpleFIN Logo"/>
+          SimpleFIN Bridge
+        </div>
+        <div class="nav-item">
+          <a href="/">Home</a>
+        </div>
+        <div class="nav-item">
+          <a href="/auth/login">Sign in</a>
+        </div>
+      </header>
+      
+      <section class="messages">
+
+      </section>
+      
+      <section class="main">
+        <h1>Forbidden</h1>
+        <p>
+  Access denied
+</p>
+
+      </section>
+
+    </section>
+
+    <footer>
+      <div class="footer-nav">
+        <a href="/search-institutions">Supported institutions</a>
+        <a href="/info/developers">Developer guide</a>
+        <a href="/info/mission">Our mission</a>
+        <a href="/info/terms">Terms of Use</a>
+        <a href="/info/privacy">Privacy</a>
+        <a href="/info/security">Security</a>
+        <a href="/info/contact">Contact us</a>
+      </div>
+      <p class="copyright">Copyright &copy; SimpleFIN</p>
+    </footer>
+    </section>
+  </body>
+</html>

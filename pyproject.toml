@@ -1,0 +1,160 @@
+[tool.poetry]
+name = "simplefin4py"
+version = "0.1.0"
+description = ""
+authors = ["Jeef <jeeftor@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+aiohttp = ">=3.9.1"
+dataclasses-json = "^0.6.3"
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^3.6.0"
+ruff = "^0.1.9"
+mypy = "^1.8.0"
+pytest = "^7.4.3"
+pytest-asyncio = "^0.23.2"
+aioresponses = "^0.7.6"
+coverage = "^7.4.0"
+python-dotenv = "^1.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+
+
+[tool.pytest.ini_options]
+#addopts = "-n 8 --cov-report xml:cov.xml --cov src --cov-report term-missing --durations-min=1 --durations=0"
+testpaths = [
+    "tests"
+]
+[tool.coverage.paths]
+source = ["src", "*/site-packages"]
+tests = ["tests", "*/tests"]
+
+[tool.coverage.run]
+branch = true
+source = ["intellifire4py", "tests"]
+
+[tool.coverage.report]
+show_missing = true
+#fail_under = 100
+
+
+[tool.isort]
+profile = "black"
+force_single_line = true
+lines_after_imports = 2
+
+[tool.mypy]
+python_version = "3.10"
+
+strict = false
+warn_unreachable = false
+pretty = true
+show_column_numbers = true
+show_error_codes = true
+show_error_context = true
+ignore_missing_imports = true
+
+# be strict
+check_untyped_defs = true
+disallow_any_generics = true
+disallow_incomplete_defs = true
+disallow_subclassing_any = true
+disallow_untyped_calls = true
+disallow_untyped_decorators = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+no_implicit_reexport = true
+strict_optional = true
+warn_incomplete_stub = true
+warn_no_return = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unused_configs = true
+warn_unused_ignores = true
+
+
+[tool.ruff]
+ignore = ["D202", "D412", "E501"]
+# Same as Black.
+line-length = 88
+select = ["B", "B9", "C", "D", "E", "F", "N", "S", "W"]
+# Assume Python 3.11.
+target-version = "py311"
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+
+[tool.ruff.flake8-pytest-style]
+mark-parentheses = false
+fixture-parentheses = false
+
+[tool.ruff.isort]
+known-first-party = ["open_meteo"]
+
+# [tool.ruff.lint.flake8-type-checking]
+# runtime-evaluated-base-classes = [
+#   "mashumaro.mixins.orjson.DataClassORJSONMixin",
+# ]
+
+[tool.ruff.mccabe]
+max-complexity = 25
+
+[tool.ruff.pydocstyle]
+convention = "google"
+
+[tool.ruff.per-file-ignores]
+"tests/*" = ["S101"]
+
+
+[tool.pylint.MASTER]
+ignore= [
+  "tests"
+]
+[tool.pylint.BASIC]
+good-names = [
+    "_",
+    "ex",
+    "fp",
+    "i",
+    "id",
+    "j",
+    "k",
+    "on",
+    "Run",
+    "T",
+]
+
+
+[tool.pylint."MESSAGES CONTROL"]
+disable= [
+    "duplicate-code",
+    "format",
+    "unsubscriptable-object",
+]
