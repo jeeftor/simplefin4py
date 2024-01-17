@@ -94,9 +94,11 @@ class FinancialData:
 
     @accounts.setter
     def accounts(self, value: list[Account]) -> None:
+        """Setter for accounts."""
         self._accounts = value
 
     @property
     def accounts_with_errors(self) -> list[Account]:
+        """Getter for accounts with errors."""
         """Return accounts that may be in error."""
         return [x for x in self.accounts if x.possible_error]
