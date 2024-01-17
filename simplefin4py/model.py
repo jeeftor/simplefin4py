@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+
 from dataclasses_json import dataclass_json, config
 
 
@@ -11,9 +12,21 @@ class Organization:
     """Org data."""
 
     domain: str
-    name: str
+
     sfin_url: str = field(metadata=config(field_name="sfin-url"))
-    url: str
+    url: str = field(default="")
+    name: str = field(default="")
+
+
+@dataclass_json
+@dataclass
+class Transaction:
+    """Transaction data."""
+
+    id: str
+    posted: int
+    amount: str
+    description: str
 
 
 @dataclass_json
@@ -44,8 +57,9 @@ class Account:
     balance: str
     available_balance: str = field(metadata=config(field_name="available-balance"))
     balance_date: int = field(metadata=config(field_name="balance-date"))
-    transactions: list[str | None]  # Transactions can be empty
-    holdings: list[Holding]
+    transactions: list[Transaction]
+    holdings: list[Holding] = field(default_factory=list)
+    extra: dict | None = None  # type: ignore
 
     # Optional Error field added by me
     possible_error: bool = False
@@ -57,7 +71,9 @@ class FinancialData:
     """Financial Data."""
 
     errors: list[str]
-    x_api_message: list[str] = field(metadata=config(field_name="x-api-message"))
+    x_api_message: list[str] = field(
+        default_factory=list, metadata=config(field_name="x-api-message")
+    )
     _accounts: list[Account] = field(
         default_factory=list, metadata=config(field_name="accounts")
     )
