@@ -27,3 +27,6 @@ def test_financial_model(data_200) -> None:  # type: ignore
 
     assert fm.accounts_with_errors[1].org.name == "Investments"
     assert fm.accounts[3].org.domain == "www.randombank2.com"
+
+    for account in fm.accounts:
+        print(account.inferred_account_type)

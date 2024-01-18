@@ -2,8 +2,19 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from enum import Enum
 
 from dataclasses_json import dataclass_json, config
+
+
+class AccountType(Enum):
+    """Account type enum."""
+
+    CHECKING = "mdi:checkbook"
+    CREDIT_CARD = "mdi:credit-card"
+    SAVINGS = "mdi:piggy-bank-outline"
+    INVESTMENT = "mdi:chart-areaspline"
+    UNKNOWN = "mdi:cash"
 
 
 @dataclass_json
@@ -72,6 +83,34 @@ class Account:
 
     # Optional Error field added by me
     possible_error: bool = False
+
+    @property
+    def inferred_account_type(self) -> AccountType:
+        """Infer the account type based on the account name and holdings.
+
+        Returns:
+            AccountType: The inferred type of the account.
+        """
+
+        account_name_lower = self.name.lower()
+
+        if "savings" in account_name_lower:
+            return AccountType.SAVINGS
+
+        if "checking" in account_name_lower:
+            return AccountType.CHECKING
+
+        if (
+            "visa" in account_name_lower
+            or "mastercard" in account_name_lower
+            or "credit" in account_name_lower
+        ):
+            return AccountType.CREDIT_CARD
+
+        if not self.holdings:  # Check if holdings list is empty
+            return AccountType.INVESTMENT
+
+        return AccountType.UNKNOWN
 
 
 @dataclass_json
