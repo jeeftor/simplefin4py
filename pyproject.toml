@@ -19,13 +19,11 @@ pytest-asyncio = "^0.23.2"
 aioresponses = "^0.7.6"
 coverage = "^7.4.0"
 python-dotenv = "^1.0.0"
+pytest-cov = "^2.6.1"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
-
-
 
 [tool.pytest.ini_options]
 #addopts = "-n 8 --cov-report xml:cov.xml --cov src --cov-report term-missing --durations-min=1 --durations=0"
@@ -158,3 +156,4 @@ disable= [
     "format",
     "unsubscriptable-object",
 ]
+

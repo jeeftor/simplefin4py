@@ -12,10 +12,19 @@ class Organization:
     """Org data."""
 
     domain: str
-
     sfin_url: str = field(metadata=config(field_name="sfin-url"))
     url: str = field(default="")
     name: str = field(default="")
+
+    def __eq__(self, other: object) -> bool:
+        """Override the default Equals behavior."""
+        if isinstance(other, Organization):
+            return self.domain == other.domain
+        return False
+
+    def __hash__(self) -> int:
+        """Override the default hash behavior (that returns the id or the object)."""
+        return hash(self.domain)
 
 
 @dataclass_json
@@ -93,7 +102,7 @@ class FinancialData:
         return self._accounts
 
     @accounts.setter
-    def accounts(self, value: list[Account]) -> None:
+    def accounts(self, value: list[Account]) -> None:  # pragma: no cover
         """Setter for accounts."""
         self._accounts = value
 
@@ -102,3 +111,33 @@ class FinancialData:
         """Getter for accounts with errors."""
         """Return accounts that may be in error."""
         return [x for x in self.accounts if x.possible_error]
+
+    @property
+    def accounts_by_org_string(self) -> dict[str, list[Account]]:
+        """Getter for accounts by org."""
+        return self._get_accounts_by_org(with_object=False)  # type:ignore
+
+    @property
+    def accounts_by_org_object(self) -> dict[Organization, list[Account]]:
+        """Getter for accounts by org."""
+        ret: dict[Organization, list[Account]] = self._get_accounts_by_org(  # type: ignore
+            with_object=True
+        )
+        return ret
+
+    def _get_accounts_by_org(
+        self, with_object: bool = False
+    ) -> dict[str | Organization, list[Account]]:
+        """Getter for accounts by org."""
+        grouped_accounts = {}  # type: ignore
+        for account in self.accounts:
+            org = account.org
+            if with_object:
+                key = org
+            else:
+                key = org.name if org.name else org.domain  # type:ignore
+
+            if org not in grouped_accounts:
+                grouped_accounts[key] = []
+            grouped_accounts[key].append(account)
+        return grouped_accounts
