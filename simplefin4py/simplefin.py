@@ -27,17 +27,32 @@ from .const import LOGGER
 class SimpleFin:
     """SimpleFin Class."""
 
-    # proxy: str | None
+    @classmethod
+    def decode_claim_token(cls, token_string: str) -> str:
+        """Decode a claim token string - or throws an error."""
+        try:
+            claim_url = base64.b64decode(token_string).decode("utf-8")
+        except binascii.Error as err:
+            raise SimpleFinInvalidClaimTokenError from err
+        return claim_url
+
+    @classmethod
+    def decode_access_url(cls, access_url: str) -> tuple[str, str, str]:
+        """Decode an access URL string - or throws an error."""
+        try:
+            scheme, rest = access_url.split("//", 1)
+            auth, rest = rest.split("@", 1)
+        except ValueError as err:
+            raise SimpleFinInvalidAccountURLError from err
+
+        return scheme, rest, auth
 
     @classmethod
     async def claim_setup_token(
         cls, setup_token: str, verify_ssl: bool = True, proxy: str | None = None
     ) -> str:
         """Exchanges a 1-time setup token for an access token."""
-        try:
-            claim_url = base64.b64decode(setup_token).decode("utf-8")
-        except binascii.Error as err:
-            raise SimpleFinInvalidClaimTokenError from err
+        claim_url = cls.decode_claim_token(setup_token)
 
         auth = BasicAuth(
             login="", password=""
@@ -65,11 +80,12 @@ class SimpleFin:
         self.access_url = access_url
         self.verify_ssl = verify_ssl
 
-        scheme, rest = access_url.split("//", 1)
-        try:
-            self.auth, rest = rest.split("@", 1)
-        except ValueError as err:
-            raise SimpleFinInvalidAccountURLError from err
+        scheme, rest, self.auth = self.decode_access_url(access_url)
+        # try:
+        #     scheme, rest = access_url.split("//", 1)
+        #     self.auth, rest = rest.split("@", 1)
+        # except ValueError as err:
+        #     raise SimpleFinInvalidAccountURLError from err
         self.url = scheme + "//" + rest + "/accounts"
         self.username, self.password = self.auth.split(":", 1)
         self.proxy: str | None = proxy
