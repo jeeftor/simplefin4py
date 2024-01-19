@@ -13,7 +13,7 @@ access_url: str = os.getenv("ACCESS_URL", "")
 
 async def main() -> None:
     """Main function."""
-    sf: SimpleFin = SimpleFin(access_url, proxy="http://192.168.1.25:3128")
+    sf: SimpleFin = SimpleFin("https://localhost:8000")
     data = await sf.fetch_data()
     print(data)
 

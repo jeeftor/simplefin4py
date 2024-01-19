@@ -4,7 +4,7 @@ from __future__ import annotations
 import aiohttp
 import base64
 
-from aiohttp import BasicAuth
+from aiohttp import BasicAuth, ClientConnectorError, ClientConnectorSSLError
 
 from .model import FinancialData
 from .const import LOGGER
@@ -34,20 +34,25 @@ class SimpleFin:
         if proxy:
             request_params["proxy"] = proxy  # type:ignore
 
-        async with cls._create_session(auth, verify_ssl) as session:
-            async with session.post(claim_url, **request_params) as response:
-                access_url: str = await response.text()
-                return access_url
-
-    @staticmethod
-    def _create_session(
-        auth: BasicAuth, verify_ssl: bool = True
-    ) -> aiohttp.ClientSession:
-        """Private method to create and return an aiohttp ClientSession."""
         ssl_context = False if not verify_ssl else None
         connector = aiohttp.TCPConnector(ssl=ssl_context)
 
-        return aiohttp.ClientSession(auth=auth, connector=connector)
+        async with aiohttp.ClientSession(auth=auth, connector=connector) as session:
+            response = await session.post(claim_url, **request_params)
+            access_url: str = await response.text()
+            return access_url
+
+    #
+    #
+    # @staticmethod
+    # def _create_session(
+    #     auth: BasicAuth, verify_ssl: bool = True
+    # ) -> aiohttp.ClientSession:
+    #     """Private method to create and return an aiohttp ClientSession."""
+    #     ssl_context = False if not verify_ssl else None
+    #     connector = aiohttp.TCPConnector(ssl=ssl_context)
+    #
+    #     return aiohttp.ClientSession(auth=auth, connector=connector)
 
     def __init__(
         self, access_url: str, *, verify_ssl: bool = True, proxy: str | None = None
@@ -57,7 +62,10 @@ class SimpleFin:
         self.verify_ssl = verify_ssl
 
         scheme, rest = access_url.split("//", 1)
-        self.auth, rest = rest.split("@", 1)
+        try:
+            self.auth, rest = rest.split("@", 1)
+        except ValueError as e:
+            raise e
         self.url = scheme + "//" + rest + "/accounts"
         self.username, self.password = self.auth.split(":", 1)
         self.proxy: str | None = proxy
@@ -74,13 +82,24 @@ class SimpleFin:
         if self.proxy:
             request_params["proxy"] = self.proxy
 
-        # Using the existing session for the request
-        async with self._create_session(self.auth, self.verify_ssl).get(
-            self.access_url + "/accounts", **request_params
-        ) as response:
-            response.raise_for_status()
-            data = await response.json()
-            LOGGER.debug(f"Received data: {data}")
-            financial_data: FinancialData = FinancialData.from_dict(data)  # type: ignore[attr-defined]
-            LOGGER.debug(f"Parsed FinancialData: {financial_data}")
-            return financial_data
+        ssl_context = False if not self.verify_ssl else None
+        connector = aiohttp.TCPConnector(ssl=ssl_context)
+
+        try:
+            async with aiohttp.ClientSession(
+                auth=self.auth, connector=connector
+            ) as session:
+                response = await session.get(
+                    self.access_url + "/accounts", **request_params
+                )
+                response.raise_for_status()
+                data = await response.json()
+                LOGGER.debug(f"Received data: {data}")
+                financial_data: FinancialData = FinancialData.from_dict(data)  # type: ignore[attr-defined]
+                LOGGER.debug(f"Parsed FinancialData: {financial_data}")
+                return financial_data
+        except (ClientConnectorError, ClientConnectorSSLError) as e:
+            raise e
+        except Exception as e:
+            print(e)
+            raise e

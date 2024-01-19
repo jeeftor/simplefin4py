@@ -1,6 +1,7 @@
 """Data models."""
 from __future__ import annotations
 
+import datetime
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -85,6 +86,11 @@ class Account:
     possible_error: bool = False
 
     @property
+    def last_update(self) -> datetime.datetime:
+        """Return the last update as a datetime object."""
+        return datetime.datetime.fromtimestamp(self.balance_date)
+
+    @property
     def inferred_account_type(self) -> AccountType:
         """Infer the account type based on the account name and holdings.
 
@@ -163,6 +169,13 @@ class FinancialData:
             with_object=True
         )
         return ret
+
+    def get_account_for_id(self, account_id: str) -> Account | None:
+        """Get account for id."""
+        for account in self.accounts:
+            if account.id == account_id:
+                return account
+        return None
 
     def _get_accounts_by_org(
         self, with_object: bool = False
