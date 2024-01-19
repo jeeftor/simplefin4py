@@ -2,6 +2,8 @@
 import json
 import os
 from typing import Any
+
+import aiohttp
 import pytest
 from aioresponses import aioresponses
 
@@ -104,5 +106,10 @@ def mock_get_data_generic_error() -> Generator[aioresponses, None, None]:
     """Fixture for mocking a fech process with bad credentials/url."""
     with aioresponses() as m:
         # Mock a failed login attempt due to bad credentials.
-        m.get(MOCK_ACCESS_URL + "/accounts", status=200, body="<,asduB*J(_8asdji>")
+        m.get(
+            MOCK_ACCESS_URL + "/accounts",
+            status=200,
+            body="<,asduB*J(_8asdji>",
+            exception=aiohttp.ClientConnectorError,
+        )
         yield m

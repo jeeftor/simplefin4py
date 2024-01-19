@@ -15,6 +15,7 @@ class AccountType(Enum):
     CREDIT_CARD = "mdi:credit-card"
     SAVINGS = "mdi:piggy-bank-outline"
     INVESTMENT = "mdi:chart-areaspline"
+    MORTGAGE = "mdi:home-city-outline"
     UNKNOWN = "mdi:cash"
 
 
@@ -102,7 +103,8 @@ class Account:
 
         if "savings" in account_name_lower:
             return AccountType.SAVINGS
-
+        if "mortgate" in account_name_lower:
+            return AccountType.MORTGAGE
         if "checking" in account_name_lower:
             return AccountType.CHECKING
 
@@ -110,6 +112,7 @@ class Account:
             "visa" in account_name_lower
             or "mastercard" in account_name_lower
             or "credit" in account_name_lower
+            or "card" in account_name_lower
         ):
             return AccountType.CREDIT_CARD
 
