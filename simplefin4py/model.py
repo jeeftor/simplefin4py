@@ -113,7 +113,7 @@ class Account:
         ):
             return AccountType.CREDIT_CARD
 
-        if not self.holdings:  # Check if holdings list is empty
+        if self.holdings:
             return AccountType.INVESTMENT
 
         return AccountType.UNKNOWN
