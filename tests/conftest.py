@@ -10,7 +10,6 @@ from collections.abc import Generator
 
 current_dir = os.path.dirname(__file__)
 
-
 MOCK_CLAIM_TOKEN = "https://claim.url"  # noqa: S105
 MOCK_ACCESS_URL = "https://user:passwords@access_url"
 
@@ -54,6 +53,16 @@ def mock_claim_token_success() -> Generator[aioresponses, None, None]:
     with aioresponses() as m:
         # Mock a failed login attempt due to bad credentials.
         m.post(MOCK_CLAIM_TOKEN, status=200, body=MOCK_ACCESS_URL)
+        yield m
+
+
+@pytest.fixture  # type: ignore
+def mock_claim_token_403() -> Generator[aioresponses, None, None]:
+    """Fixture for mocking a login process with bad credentials."""
+    # Using 'aioresponses' to mock asynchronous HTTP responses.
+    with aioresponses() as m:
+        # Mock a failed login attempt due to bad credentials.
+        m.post(MOCK_CLAIM_TOKEN, status=403, body="")
         yield m
 
 

@@ -1,11 +1,14 @@
 """SimpleFin Class."""
 from __future__ import annotations
 
+import binascii
+
 import aiohttp
 import base64
 
 from aiohttp import BasicAuth, ClientConnectorError, ClientConnectorSSLError
 
+from .exceptions import SimpleFinClaimError, SimpleFinInvalidClaimTokenError
 from .model import FinancialData
 from .const import LOGGER
 
@@ -25,7 +28,11 @@ class SimpleFin:
         cls, setup_token: str, verify_ssl: bool = True, proxy: str | None = None
     ) -> str:
         """Exchanges a 1-time setup token for an access token."""
-        claim_url = base64.b64decode(setup_token).decode("utf-8")
+        try:
+            claim_url = base64.b64decode(setup_token).decode("utf-8")
+        except binascii.Error as err:
+            raise SimpleFinInvalidClaimTokenError from err
+
         auth = BasicAuth(
             login="", password=""
         )  # Replace with appropriate auth if needed
@@ -39,6 +46,9 @@ class SimpleFin:
 
         async with aiohttp.ClientSession(auth=auth, connector=connector) as session:
             response = await session.post(claim_url, **request_params)
+            if response.status == 403:
+                # Claim issue
+                raise SimpleFinClaimError()
             access_url: str = await response.text()
             return access_url
 
