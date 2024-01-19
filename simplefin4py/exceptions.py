@@ -32,10 +32,18 @@ class SimpleFinAuthError(Exception):
         super().__init__(self.message)
 
 
-class SimpleFinPaymentError(Exception):
+class SimpleFinPaymentRequiredError(Exception):
     """A 402 error will raise a Payment Required."""
 
     def __init__(self) -> None:
         """Initialize the exception."""
         self.message = "Payment Required"
         super().__init__(self.message)
+
+
+class SimpleFinInvalidAccountURLError(Exception):
+    """Invalid authorization URL."""
+
+    def __init__(self) -> None:
+        """Initialize the exception."""
+        self.message = "There was an issue parsing the Account URL."

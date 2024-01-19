@@ -97,3 +97,12 @@ def mock_get_data_403(data_403: str) -> Generator[aioresponses, None, None]:
         # Mock a failed login attempt due to bad credentials.
         m.get(MOCK_ACCESS_URL + "/accounts", status=403, body=data_403)
         yield m
+
+
+@pytest.fixture()  # type: ignore
+def mock_get_data_generic_error() -> Generator[aioresponses, None, None]:
+    """Fixture for mocking a fech process with bad credentials/url."""
+    with aioresponses() as m:
+        # Mock a failed login attempt due to bad credentials.
+        m.get(MOCK_ACCESS_URL + "/accounts", status=200, body="<,asduB*J(_8asdji>")
+        yield m

@@ -8,7 +8,13 @@ import base64
 
 from aiohttp import BasicAuth, ClientConnectorError, ClientConnectorSSLError
 
-from .exceptions import SimpleFinClaimError, SimpleFinInvalidClaimTokenError
+from .exceptions import (
+    SimpleFinClaimError,
+    SimpleFinInvalidClaimTokenError,
+    SimpleFinInvalidAccountURLError,
+    SimpleFinPaymentRequiredError,
+    SimpleFinAuthError,
+)
 from .model import FinancialData
 from .const import LOGGER
 
@@ -62,15 +68,11 @@ class SimpleFin:
         scheme, rest = access_url.split("//", 1)
         try:
             self.auth, rest = rest.split("@", 1)
-        except ValueError as e:
-            raise e
+        except ValueError as err:
+            raise SimpleFinInvalidAccountURLError from err
         self.url = scheme + "//" + rest + "/accounts"
         self.username, self.password = self.auth.split(":", 1)
         self.proxy: str | None = proxy
-
-        # self.auth already is this i think..??
-        # self.auth = BasicAuth(self.username, self.password)
-        # self.session = self._create_session(auth, verify_ssl)
 
     async def fetch_data(self) -> FinancialData:
         """Fetch financial data from SimpleFin and return as FinancialData object."""
@@ -90,14 +92,19 @@ class SimpleFin:
                 response = await session.get(
                     self.access_url + "/accounts", **request_params
                 )
-                response.raise_for_status()
+
+                if response.status == 402:
+                    raise SimpleFinPaymentRequiredError()
+                if response.status == 403:
+                    raise SimpleFinAuthError()
+
                 data = await response.json()
                 LOGGER.debug(f"Received data: {data}")
                 financial_data: FinancialData = FinancialData.from_dict(data)  # type: ignore[attr-defined]
                 LOGGER.debug(f"Parsed FinancialData: {financial_data}")
                 return financial_data
-        except (ClientConnectorError, ClientConnectorSSLError) as e:
-            raise e
+        except (ClientConnectorError, ClientConnectorSSLError) as err:
+            raise err
         except Exception as e:
             print(e)
             raise e

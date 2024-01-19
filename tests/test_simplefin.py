@@ -1,11 +1,15 @@
 """Tests for stuff."""
 
-import aiohttp
 import pytest
 from aioresponses import aioresponses
 
 from simplefin4py import SimpleFin
-from simplefin4py.exceptions import SimpleFinInvalidClaimTokenError, SimpleFinClaimError
+from simplefin4py.exceptions import (
+    SimpleFinInvalidClaimTokenError,
+    SimpleFinClaimError,
+    SimpleFinPaymentRequiredError,
+    SimpleFinAuthError,
+)
 from tests.conftest import MOCK_ACCESS_URL
 
 
@@ -40,7 +44,7 @@ async def test_claim_token_403(mock_claim_token_403, mock_claim_token):
 async def test_access_402(mock_get_data_402) -> None:
     """Test a failed access token."""
     sf = SimpleFin(MOCK_ACCESS_URL)
-    with pytest.raises(aiohttp.client_exceptions.ClientResponseError):
+    with pytest.raises(SimpleFinPaymentRequiredError):
         await sf.fetch_data()
 
 
@@ -48,7 +52,7 @@ async def test_access_402(mock_get_data_402) -> None:
 async def test_access_403(mock_get_data_403) -> None:
     """Test a failed access token."""
     sf = SimpleFin(MOCK_ACCESS_URL)
-    with pytest.raises(aiohttp.client_exceptions.ClientResponseError):
+    with pytest.raises(SimpleFinAuthError):
         await sf.fetch_data()
 
 
