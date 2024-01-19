@@ -42,18 +42,6 @@ class SimpleFin:
             access_url: str = await response.text()
             return access_url
 
-    #
-    #
-    # @staticmethod
-    # def _create_session(
-    #     auth: BasicAuth, verify_ssl: bool = True
-    # ) -> aiohttp.ClientSession:
-    #     """Private method to create and return an aiohttp ClientSession."""
-    #     ssl_context = False if not verify_ssl else None
-    #     connector = aiohttp.TCPConnector(ssl=ssl_context)
-    #
-    #     return aiohttp.ClientSession(auth=auth, connector=connector)
-
     def __init__(
         self, access_url: str, *, verify_ssl: bool = True, proxy: str | None = None
     ) -> None:
