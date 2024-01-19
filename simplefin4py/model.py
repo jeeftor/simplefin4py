@@ -164,6 +164,13 @@ class FinancialData:
         )
         return ret
 
+    def get_account_for_id(self, account_id: str) -> Account | None:
+        """Get account for id."""
+        for account in self.accounts:
+            if account.id == account_id:
+                return account
+        return None
+
     def _get_accounts_by_org(
         self, with_object: bool = False
     ) -> dict[str | Organization, list[Account]]:
