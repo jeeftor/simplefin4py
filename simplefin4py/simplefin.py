@@ -91,7 +91,24 @@ class SimpleFin:
         self.proxy: str | None = proxy
 
     async def fetch_data(self) -> FinancialData:
-        """Fetch financial data from SimpleFin and return as FinancialData object."""
+        """Fetch financial data from SimpleFin and return as FinancialData object.
+
+        This method attempts to retrieve financial data from a given SimpleFin endpoint.
+        It raises specific exceptions for HTTP status codes 402 and 403, indicating
+        payment required and authentication errors, respectively. Additionally, it
+        captures and re-raises `ClientConnectorError` and `ClientConnectorSSLError`
+        for lower-level connection issues.
+
+        Raises:
+            SimpleFinPaymentRequiredError: Raised when the response status is 402 (Payment Required).
+            SimpleFinAuthError: Raised when the response status is 403 (Forbidden).
+            ClientConnectorError: Raised for general connection errors.
+            ClientConnectorSSLError: Raised for SSL-related connection errors.
+            Exception: General exception for any other errors that might occur.
+
+        Returns:
+            FinancialData: The financial data retrieved from SimpleFin.
+        """
         LOGGER.debug("Starting fetch_data in SimpleFin")
 
         request_params: dict[str, str | bool] = {"ssl": self.verify_ssl}
