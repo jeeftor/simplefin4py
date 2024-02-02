@@ -103,7 +103,8 @@ class SimpleFin:
             SimpleFinPaymentRequiredError: Raised when the response status is 402 (Payment Required).
             SimpleFinAuthError: Raised when the response status is 403 (Forbidden).
             ClientConnectorError: Raised for general connection errors.
-            ClientConnectorSSLError: Raised for SSL-related connection errors.
+            ClientConnectorSSLError: Raised for SSL-related connection errors.        return self.coordinator.data.get_account_for_id(self.account_id).currency
+
             Exception: General exception for any other errors that might occur.
 
         Returns:

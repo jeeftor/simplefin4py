@@ -89,7 +89,9 @@ class Account:
     @property
     def last_update(self) -> datetime.datetime:
         """Return the last update as a datetime object."""
-        return datetime.datetime.fromtimestamp(self.balance_date)
+        return datetime.datetime.fromtimestamp(
+            self.balance_date, tz=datetime.timezone.utc
+        )
 
     @property
     def inferred_account_type(self) -> AccountType:
