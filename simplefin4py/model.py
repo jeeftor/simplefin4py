@@ -49,6 +49,9 @@ class Transaction:
     posted: int
     amount: str
     description: str
+    payee: str
+    memo: str
+    transacted_at: int
 
 
 @dataclass_json

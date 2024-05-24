@@ -22,7 +22,10 @@
           "id": "12394832938403",
           "posted": 793090572,
           "amount": "-1234.56",
-          "description": "Enchanted Bait Shop"
+          "description": "Enchanted Bait Shop",
+          "payee": "Uncle Frank",
+          "memo": "Some memo",
+          "transacted_at": 793080572
         }
       ],
       "extra": {
