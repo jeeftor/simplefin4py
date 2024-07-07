@@ -46,9 +46,12 @@ class Transaction:
     """Transaction data."""
 
     id: str
-    posted: int
+    posted: datetime = field(metadata=config(decoder=datetime.datetime.fromtimestamp))
     amount: str
     description: str
+    payee: str
+    memo: str
+    transacted_at: datetime = field(metadata=config(decoder=datetime.datetime.fromtimestamp))
 
 
 @dataclass_json
@@ -57,7 +60,7 @@ class Holding:
     """Holding data."""
 
     id: str
-    created: int
+    created: datetime = field(metadata=config(decoder=datetime.datetime.fromtimestamp))
     currency: str | None  # Using `|` for optional fields
     cost_basis: str = field(metadata=config(field_name="cost-basis"))
     description: str
@@ -78,7 +81,7 @@ class Account:
     currency: str
     balance: str
     available_balance: str = field(metadata=config(field_name="available-balance"))
-    balance_date: int = field(metadata=config(field_name="balance-date"))
+    balance_date: datetime = field(metadata=config(field_name="balance-date", decoder=datetime.datetime.fromtimestamp))
     transactions: list[Transaction]
     holdings: list[Holding] = field(default_factory=list)
     extra: dict | None = None  # type: ignore
