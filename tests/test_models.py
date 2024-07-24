@@ -1,8 +1,25 @@
 """Test models."""
-
+from datetime import datetime, timezone
 
 import pytest
 from simplefin4py.model import FinancialData
+
+
+def test_dates(data_200) -> None:
+    try:
+        fm: FinancialData = FinancialData.from_json(data_200)  # type: ignore
+    except Exception as e:
+        pytest.fail(f"Failed to convert JSON data to FinancialData: {e}")
+
+    assert fm.accounts[0].balance_date.year == 2024
+    assert fm.accounts[0].balance_date.month == 1
+    assert fm.accounts[0].balance_date.day == 16
+    assert fm.accounts[0].balance_date.hour == 7
+    assert fm.accounts[0].balance_date.minute == 4
+    assert fm.accounts[0].balance_date.second == 3
+    assert fm.accounts[0].balance_date.tzinfo is None
+    assert fm.accounts[0].last_update.tzinfo == timezone.utc
+
 
 
 def test_financial_model(data_200) -> None:  # type: ignore
