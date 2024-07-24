@@ -13,9 +13,16 @@ access_url: str = os.getenv("ACCESS_URL", "")
 
 async def main() -> None:
     """Main function."""
-    sf: SimpleFin = SimpleFin("https://localhost:8000")
+    sf: SimpleFin = SimpleFin(access_url)
     data = await sf.fetch_data()
-    print(data)
+    # print(data)
+
+
+    for account in data.accounts:
+        print(account.name, account.org.name, account.possible_error)
+        print(account.balance_date)
+        print(account.last_update_utc)
+        print(account.last_update_timestamp)
 
 
 # Run the async main function

@@ -82,6 +82,7 @@ class Account:
     balance: str
     available_balance: str = field(metadata=config(field_name="available-balance"))
     balance_date: datetime = field(metadata=config(field_name="balance-date", decoder=datetime.datetime.fromtimestamp))
+
     transactions: list[Transaction]
     holdings: list[Holding] = field(default_factory=list)
     extra: dict | None = None  # type: ignore
@@ -89,12 +90,20 @@ class Account:
     # Optional Error field added by me
     possible_error: bool = False
 
+    def _timestamp_to_utc(ts: float) -> datetime:
+        return datetime.fromtimestamp(ts, tz=datetime.timezone.utc)
+
+
     @property
-    def last_update(self) -> datetime.datetime:
-        """Return the last update as a datetime object."""
-        return datetime.datetime.fromtimestamp(
-            self.balance_date, tz=datetime.timezone.utc
-        )
+    def last_update_utc(self) -> datetime.datetime:
+        """Return the last update as a datetime object with a timezone."""
+        if self.balance_date.tzinfo is None:
+            return  self.balance_date.replace(tzinfo=datetime.timezone.utc)
+
+    @property
+    def last_update_timestamp(self) -> float:
+        """Return the last update as a timestamp."""
+        return self.balance_date.timestamp()
 
     @property
     def inferred_account_type(self) -> AccountType:
