@@ -1,11 +1,14 @@
 """Data models."""
 from __future__ import annotations
 
-import datetime
+from datetime import datetime, timezone
 from dataclasses import dataclass, field
 from enum import Enum
 
 from dataclasses_json import dataclass_json, config
+
+def _timestamp_to_utc(ts: float) -> datetime:
+    return datetime.fromtimestamp(ts, tz=timezone.utc)
 
 
 class AccountType(Enum):
@@ -46,12 +49,12 @@ class Transaction:
     """Transaction data."""
 
     id: str
-    posted: datetime = field(metadata=config(decoder=datetime.datetime.fromtimestamp))
+    posted: datetime = field(metadata=config(decoder=_timestamp_to_utc))
     amount: str
     description: str
     payee: str
     memo: str
-    transacted_at: datetime = field(metadata=config(decoder=datetime.datetime.fromtimestamp))
+    transacted_at: datetime = field(metadata=config(decoder=_timestamp_to_utc))
 
 
 @dataclass_json
@@ -60,7 +63,7 @@ class Holding:
     """Holding data."""
 
     id: str
-    created: datetime = field(metadata=config(decoder=datetime.datetime.fromtimestamp))
+    created: datetime = field(metadata=config(decoder=_timestamp_to_utc))
     currency: str | None  # Using `|` for optional fields
     cost_basis: str = field(metadata=config(field_name="cost-basis"))
     description: str
@@ -81,7 +84,7 @@ class Account:
     currency: str
     balance: str
     available_balance: str = field(metadata=config(field_name="available-balance"))
-    balance_date: datetime = field(metadata=config(field_name="balance-date", decoder=datetime.datetime.fromtimestamp))
+    balance_date: datetime = field(metadata=config(field_name="balance-date", decoder=_timestamp_to_utc))
 
     transactions: list[Transaction]
     holdings: list[Holding] = field(default_factory=list)
@@ -90,15 +93,6 @@ class Account:
     # Optional Error field added by me
     possible_error: bool = False
 
-    def _timestamp_to_utc(ts: float) -> datetime:
-        return datetime.fromtimestamp(ts, tz=datetime.timezone.utc)
-
-
-    @property
-    def last_update_utc(self) -> datetime.datetime:
-        """Return the last update as a datetime object with a timezone."""
-        if self.balance_date.tzinfo is None:
-            return  self.balance_date.replace(tzinfo=datetime.timezone.utc)
 
     @property
     def last_update_timestamp(self) -> float:
